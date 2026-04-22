@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>2024年各省GDP和智能公司数量</title>
+
+  <style>
+    *{ margin:0; padding:0; box-sizing:border-box; }
+    
+    /* 页眉 */
+    .header{
+      height:60px;
+      background:#005f9e;
+      color:white;
+      display:flex;
+      align-items:center;
+      padding:0 20px;
+      font-size:20px;
+      font-weight:bold;
+    }
+
+    /* 地图区域 */
+    #viewDiv{
+      height: calc(100vh - 60px);
+      width: 100%;
+      position:relative;
+    }
+
+    /* 底图区域已隐藏 */
+    .basemap-box{
+      display: none;
+    }
+  </style>
+
+  <!-- 浏览器兼容补丁 -->
+  <script>
+    if (!Array.prototype.findLast) {
+      Array.prototype.findLast = function(fn){
+        return this.slice().reverse().find(fn);
+      };
+    }
+  </script>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/5.0/esri/themes/light/main.css">
+  <script type="module" src="https://js.arcgis.com/5.0/"></script>
+
+  <script type="module">
+    const [
+      MapView, WebMap, config,
+      ScaleBar, Legend, Search, LayerList, LayerListViewModel
+    ] = await $arcgis.import([
+      "@arcgis/core/views/MapView",
+      "@arcgis/core/WebMap",
+      "@arcgis/core/config",
+      "@arcgis/core/widgets/ScaleBar",
+      "@arcgis/core/widgets/Legend",
+      "@arcgis/core/widgets/Search",
+      "@arcgis/core/widgets/LayerList",
+      "@arcgis/core/widgets/LayerList/LayerListViewModel"
+    ]);
+
+    // 指向 GeoScene 中国
+    config.portalUrl = "https://www.geosceneonline.cn/geoscene";
+
+    // 你的地图ID
+    const webmap = new WebMap({
+      portalItem: { 
+        id: "0b956aad18f949d6a32073cf3ec6f870" 
+      }
+    });
+
+    const view = new MapView({
+      container: "viewDiv",
+      map: webmap
+    });
+
+    view.when(()=>{
+      console.log("地图加载成功");
+
+      // 1. 比例尺 - 左下角
+      view.ui.add(new ScaleBar({ view, unit:"metric" }), "bottom-left");
+
+      // 2. 图例 - 右下角（你要求的位置）
+      view.ui.add(new Legend({ view }), "bottom-right");
+
+      // 3. 搜索框 - 左上角
+      view.ui.add(new Search({ view }), "top-left");
+
+      // ==============================================
+      // 【完整版图层控制】显隐、缩放、透明度、层级调整
+      // ==============================================
+      const layerList = new LayerList({
+        view: view,
+        viewModel: new LayerListViewModel({
+          view: view,
+          showLegend: true,
+          showOpacitySlider: true  // 显示透明度滑块
+        })
+      });
+      view.ui.add(layerList, "top-right");
+
+    });
+
+  </script>
+</head>
+
+<body>
+  <!-- 页眉 -->
+  <div class="header">2024年各省GDP和智能公司数量</div>
+
+  <!-- 地图区域 -->
+  <div id="viewDiv"></div>
+</body>
+</html>
