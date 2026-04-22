@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>2024年各省GDP和智能公司数量</title>
+
+  <style>
+    *{ margin:0; padding:0; box-sizing:border-box; }
+    html,body{ height:100%; }
+
+    /* 页眉 */
+    .header{
+      height:60px;
+      background:#005f9e;
+      color:white;
+      display:flex;
+      align-items:center;
+      padding:0 20px;
+      font-size:20px;
+      font-weight:bold;
+    }
+
+    /* 主布局：地图 + 右侧信息面板 */
+    .main-container{
+      display: flex;
+      height: calc(100vh - 60px);
+    }
+
+    /* 地图区域 */
+    #viewDiv{
+      flex: 1;
+      position: relative;
+    }
+
+    /* 右侧信息面板 */
+    .basemap-box{
+      width: 260px;
+      background:#f5f5f5;
+      border-left:1px solid #ddd;
+      padding:15px;
+    }
+    .basemap-box h3{
+      color:#005f9e;
+      margin-bottom:10px;
+      border-bottom:2px solid #005f9e;
+      padding-bottom:5px;
+    }
+    .basemap-item{
+      padding:10px;
+      background:white;
+      margin:8px 0;
+      border-radius:4px;
+      border:1px solid #ccc;
+    }
+
+  </style>
+
+  <!-- 兼容补丁 -->
+  <script>
+    if (!Array.prototype.findLast) {
+      Array.prototype.findLast = function(fn){
+        return this.slice().reverse().find(fn);
+      };
+    }
+  </script>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/4.32/esri/themes/light/main.css">
+  <script src="https://js.arcgis.com/4.32/"></script>
+
+  <script>
+    require([
+      "esri/views/MapView",
+      "esri/WebMap",
+      "esri/config",
+      "esri/widgets/ScaleBar",
+      "esri/widgets/Legend",
+      "esri/widgets/Search",
+      "esri/widgets/LayerList",
+      "esri/widgets/BasemapGallery",
+      "esri/Basemap"
+    ], function(
+      MapView, WebMap, config,
+      ScaleBar, Legend, Search, LayerList,
+      BasemapGallery, Basemap
+    ){
+
+      // 指向 GeoScene 中国
+      config.portalUrl = "https://www.geosceneonline.cn/geoscene";
+
+      // 你的原有地图
+      const webmap = new WebMap({
+        portalItem: { 
+          id: "0b956aad18f949d6a32073cf3ec6f870" 
+        }
+      });
+
+      const view = new MapView({
+        container: "viewDiv",
+        map: webmap
+      });
+
+      view.when(()=>{
+        // 比例尺
+        view.ui.add(new ScaleBar({ view: view, unit:"metric" }), "bottom-left");
+        // 图例
+        view.ui.add(new Legend({ view: view }), "bottom-right");
+        // 搜索
+        view.ui.add(new Search({ view: view }), "top-left");
+        // 图层控制
+        view.ui.add(new LayerList({ view: view }), "top-right");
+
+        // ==========================
+        // 底图库（你提供的4个ID）
+        // ==========================
+        const basemapGallery = new BasemapGallery({
+          view: view,
+          container: "basemapGalleryContainer",
+          source: [
+            new Basemap({ portalItem: { id: "933d74d3d77d492f852cd3c5af72cdc8" } }),
+            new Basemap({ portalItem: { id: "192885bd1f1a402a9a0b195863e1b3dc" } }),
+            new Basemap({ portalItem: { id: "1059082c64f54258a6e3cd5be40caaa8" } }),
+            new Basemap({ portalItem: { id: "07ea76db10174ca3b52be9b8c4531ae3" } })
+          ]
+        });
+      });
+
+    });
+  </script>
+</head>
+
+<body>
+  <div class="header">2024年各省GDP和智能公司数量</div>
+
+  <div class="main-container">
+    <div id="viewDiv"></div>
+
+    <div class="basemap-box">
+      <h3>底图切换</h3>
+      <!-- 底图库自动渲染在这里 -->
+      <div id="basemapGalleryContainer"></div>
+    </div>
+  </div>
+</body>
+</html>
